@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BannaFlix+ — Filmová streamovacia platforma</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --nflx-red: #E50914;
+            --nflx-red-glow: rgba(229, 9, 20, 0.45);
+            --bg-base: #141414;
+            --bg-darker: #0c0c0e;
+            --bg-card: rgba(24, 24, 27, 0.88);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --cyan: #00f2fe;
+            --cyan-glow: rgba(0, 242, 254, 0.35);
+            --text-main: #FFFFFF;
+            --text-muted: #a3a3a3;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-xl: 22px;
+            --transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Netflix Navigácia */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 48px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+            backdrop-filter: blur(14px);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            background: rgba(12, 12, 14, 0.97);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 12px 48px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+        }
+
+        .logo-bannaflix {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            color: var(--nflx-red);
+            text-shadow: 0 0 20px var(--nflx-red-glow);
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-bannaflix span {
+            color: #fff;
+            font-size: 1.5rem;
+            vertical-align: super;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Vyhľadávanie */
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 8px 16px 8px 36px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            width: 220px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            width: 310px;
+            border-color: var(--nflx-red);
+            box-shadow: 0 0 15px var(--nflx-red-glow);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Tlačidlá */
+        .btn-nflx {
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-red {
+            background: var(--nflx-red);
+            color: #fff;
+            box-shadow: 0 0 18px var(--nflx-red-glow);
+        }
+
+        .btn-red:hover {
+            background: #f40612;
+            transform: scale(1.04);
+            box-shadow: 0 0 26px var(--nflx-red-glow);
+        }
+
+        .btn-white {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-white:hover {
+            background: rgba(255, 255, 255, 0.85);
+            transform: scale(1.04);
+        }
+
+        .btn-trans {
+            background: rgba(109, 109, 110, 0.65);
+            color: #fff;
+        }
+
+        .btn-trans:hover {
+            background: rgba(109, 109, 110, 0.4);
+        }
+
+        /* BILLBOARD HERO BANNER (Trailer / Úvodný film) */
+        .billboard {
+            position: relative;
+            height: 82vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 48px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .billboard-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.62);
+            transition: opacity 0.8s ease, transform 10s ease-out;
+            transform: scale(1.03);
+        }
+
+        .billboard:hover .billboard-backdrop {
+            transform: scale(1.08);
+        }
+
+        .billboard-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(77deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,0.5) 48%, transparent 72%),
+                linear-gradient(180deg, transparent 65%, var(--bg-base) 100%);
+        }
+
+        .billboard-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .billboard-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-netflix {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--nflx-red);
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+        }
+
+        .badge-pill {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .billboard-title {
+            font-size: 3.4rem;
+            font-weight: 800;
+            line-height: 1.05;
+            text-shadow: 2px 2px 14px rgba(0,0,0,0.9);
+        }
+
+        .billboard-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.88rem;
+            color: #46d369;
+            font-weight: 700;
+        }
+
+        .billboard-meta span {
+            color: #fff;
+            font-weight: 400;
+        }
+
+        .billboard-desc {
+            font-size: 0.98rem;
+            line-height: 1.5;
+            color: #ddd;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .billboard-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        /* NETFLIX HORIZONTÁLNE POLIČKY */
+        .shelves-container {
+            position: relative;
+            z-index: 5;
+            margin-top: -55px;
+            display: flex;
+            flex-direction: column;
+            gap: 34px;
+            padding-bottom: 70px;
+        }
+
+        .shelf-row {
+            padding: 0 48px;
+        }
+
+        .shelf-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .shelf-title .title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shelf-action-link {
+            font-size: 0.82rem;
+            color: var(--nflx-red);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .shelf-action-link:hover {
+            color: #ff4752;
+            text-decoration: underline;
+        }
+
+        .movie-slider {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 16px 4px 26px 4px;
+            scrollbar-width: none;
+        }
+
+        .movie-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Karta Filmu (Hover animácia a akcie) */
+        .movie-card {
+            flex: 0 0 250px;
+            height: 145px;
+            background: #202020;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.18);
+            z-index: 100;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95), 0 0 25px var(--nflx-red-glow);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.95) 85%);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-badge {
+            background: var(--nflx-red);
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .card-fav-btn {
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .card-fav-btn:hover {
+            background: var(--nflx-red);
+            transform: scale(1.15);
+        }
+
+        .card-fav-btn.saved {
+            color: #ff3344;
+            border-color: #ff3344;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-tags {
+            font-size: 0.7rem;
+            color: #46d369;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .card-tags span {
+            color: #ddd;
+        }
+
+        /* MODAL KINO PREHRÁVAČ (100% BEZ REKLÁM) */
+        .player-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(25px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .player-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .player-box {
+            position: relative;
+            width: 92%;
+            max-width: 1150px;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: 0 0 70px rgba(229, 9, 20, 0.5);
+            border: 1px solid var(--border-glass);
+        }
+
+        .player-box iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-player {
+            position: absolute;
+            top: 24px;
+            right: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .close-player:hover {
+            background: var(--nflx-red);
+            transform: rotate(90deg);
+        }
+
+        /* VŠEOBECNÉ DIALÓGOVÉ OKNÁ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .nflx-dialog {
+            background: #18181b;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            width: 100%;
+            max-width: 580px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 36px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+        }
+
+        .nflx-dialog.wide {
+            max-width: 950px;
+        }
+
+        .close-dialog {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .close-dialog:hover {
+            color: #fff;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            background: #27272a;
+            border: 1px solid var(--border-glass);
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--nflx-red);
+            box-shadow: 0 0 15px var(--nflx-red-glow);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* TARIFY (4 MESAČNÉ + 4 ROČNÉ) */
+        .tariffs-switch {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 26px 0;
+        }
+
+        .tariffs-switch button {
+            background: #27272a;
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .tariffs-switch button.active {
+            background: var(--nflx-red);
+            border-color: transparent;
+            box-shadow: 0 0 20px var(--nflx-red-glow);
+        }
+
+        .tariffs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .tariff-box {
+            background: #202024;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .tariff-box.featured {
+            border-color: var(--nflx-red);
+            box-shadow: 0 0 25px var(--nflx-red-glow);
+            transform: scale(1.02);
+        }
+
+        .tariff-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--nflx-red);
+            margin: 10px 0;
+        }
+
+        .tariff-price span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .tariff-features {
+            list-style: none;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: left;
+            line-height: 1.8;
+            margin: 14px 0;
+        }
+
+        .tariff-features li i {
+            color: #46d369;
+            margin-right: 6px;
+        }
+
+        /* TOAST NOTIFIKÁCIE */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-card {
+            background: #18181b;
+            border-left: 4px solid var(--nflx-red);
+            border-top: 1px solid var(--border-glass);
+            border-right: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 14px 18px;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.88rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Prázdna knižnica */
+        .empty-db-msg {
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 900px) {
+            header { padding: 14px 20px; }
+            .billboard { padding: 0 20px; height: 75vh; }
+            .shelf-row { padding: 0 20px; }
+            .billboard-title { font-size: 2.2rem; }
+            .tariffs-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NETFLIX HLAVIČKA -->
+    <header id="mainHeader">
+        <div class="header-left">
+            <a class="logo-bannaflix" onclick="resetView()">
+                BANNAFLIX<span>+</span>
+            </a>
+            <ul class="nav-links">
+                <li><a class="active" onclick="resetView()">Domov</a></li>
+                <li><a onclick="scrollToShelf('shelf-czsk')">CZ/SK Legendy</a></li>
+                <li><a onclick="scrollToShelf('shelf-hollywood')">Hollywood Dabing</a></li>
+                <li><a onclick="scrollToShelf('shelf-action')">Akčné & Sci-Fi</a></li>
+                <li><a onclick="scrollToShelf('shelf-family')">Animované</a></li>
+                <li><a onclick="scrollToShelf('shelf-db')"><i class="fa-solid fa-bookmark" style="color:var(--nflx-red);"></i> Moja Knižnica</a></li>
+            </ul>
+        </div>
+
+        <div class="header-right">
+            <!-- YouTube API v3 kľúč -->
+            <button class="btn-nflx btn-trans" onclick="openModal('apiModal')">
+                <i class="fa-brands fa-youtube" style="color:var(--nflx-red);"></i> Sync API v3
+            </button>
+
+            <!-- Predplatné -->
+            <button class="btn-nflx btn-red" onclick="openModal('tariffsModal')">
+                <i class="fa-solid fa-crown"></i> Predplatné
+            </button>
+
+            <!-- Vyhľadávanie -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="movieSearchInput" placeholder="Hľadať z 50+ filmov..." onkeyup="searchMovies(event)">
+            </div>
+
+            <!-- Profil / Prihlásenie -->
+            <div id="authProfileContainer">
+                <button class="btn-nflx btn-white" onclick="openModal('authModal')">Prihlásiť sa</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BILLBOARD HERO TRAILER BANNER -->
+    <section class="billboard" id="billboardSection">
+        <img class="billboard-backdrop" id="heroBackdrop" src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1600&auto=format&fit=crop" alt="Hero Movie">
+        <div class="billboard-vignette"></div>
+
+        <div class="billboard-content">
+            <div class="billboard-tag">
+                <span class="badge-netflix">BANNAFLIX EXKLUZÍV</span>
+                <span class="badge-pill" id="heroDubTag">CZ DABING</span>
+                <span class="badge-pill" style="border: 1px solid #fff;">8K ULTRA HD</span>
+            </div>
+            <h1 class="billboard-title" id="heroTitle">Počiatok (Inception)</h1>
+            <div class="billboard-meta">
+                <span>99% Zhoda</span>
+                <span>2h 28m</span>
+                <span style="border:1px solid #777; padding:1px 5px; border-radius:3px; color:#fff;">16+</span>
+                <span>Dolby Atmos 5.1</span>
+            </div>
+            <p class="billboard-desc" id="heroDesc">
+                Skúsený zlodej Dom Cobb je najlepším v nebezpečnom umení extrakcie: krádeži cenných tajomstiev z hĺbky podvedomia počas spánku. Teraz dostáva poslednú šancu na vykúpenie...
+            </p>
+            <div class="billboard-actions">
+                <button class="btn-nflx btn-white" style="font-size: 1.05rem; padding: 12px 28px;" onclick="playCurrentHero()">
+                    <i class="fa-solid fa-play"></i> Prehrať bez reklám
+                </button>
+                <button class="btn-nflx btn-trans" style="font-size: 1.05rem; padding: 12px 22px;" id="heroBookmarkBtn" onclick="toggleHeroBookmark()">
+                    <i class="fa-solid fa-plus"></i> Uložiť do zoznamu
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ŠKÁLOVATEĽNÉ NETFLIX POLIČKY (50+ FILMOV) -->
+    <main class="shelves-container">
+
+        <!-- KNIŽNICA: ULOŽENÉ DO INDEXEDDB -->
+        <section class="shelf-row" id="shelf-db">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-database" style="color:var(--cyan);"></i>
+                    Moja Knižnica (Uložené v IndexedDB)
+                </div>
+                <span class="shelf-action-link" onclick="clearAllFromDB()"><i class="fa-solid fa-trash"></i> Vyčistiť knižnicu</span>
+            </div>
+            <div class="movie-slider" id="sliderIndexedDB">
+                <div class="empty-db-msg">Zatiaľ ste si neuložili žiadne filmy do IndexedDB. Kliknite na ikonku záložky na karte filmu pre okamžité uloženie!</div>
+            </div>
+        </section>
+
+        <!-- POLIČKA 1: ALGORITMUS ODPORÚČANÉ -->
+        <section class="shelf-row" id="shelf-algo">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--nflx-red);"></i>
+                    Odporúčané pre vás (Smart Algoritmus)
+                </div>
+                <span class="shelf-action-link" onclick="reshuffleAlgorithm()"><i class="fa-solid fa-rotate"></i> Premiešať nový obsah</span>
+            </div>
+            <div class="movie-slider" id="sliderAlgorithm"></div>
+        </section>
+
+        <!-- POLIČKA 2: KULTOVÉ ČESKÉ A SLOVENSKÉ FILMY -->
+        <section class="shelf-row" id="shelf-czsk">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-clapperboard" style="color:var(--nflx-red);"></i>
+                    Kultová Česká a Slovenská Kinematografia
+                </div>
+            </div>
+            <div class="movie-slider" id="sliderCZSK"></div>
+        </section>
+
+        <!-- POLIČKA 3: HOLLYWOODSKE TRHÁKY (CZ/SK DABING) -->
+        <section class="shelf-row" id="shelf-hollywood">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-film" style="color:var(--nflx-red);"></i>
+                    Hollywoodske Trháky s Českým a Slovenským Dabingom
+                </div>
+            </div>
+            <div class="movie-slider" id="sliderHollywood"></div>
+        </section>
+
+        <!-- POLIČKA 4: AKČNÉ & SCI-FI -->
+        <section class="shelf-row" id="shelf-action">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-rocket" style="color:var(--nflx-red);"></i>
+                    Akčné Trháky & Sci-Fi Vesmír
+                </div>
+            </div>
+            <div class="movie-slider" id="sliderAction"></div>
+        </section>
+
+        <!-- POLIČKA 5: RODINNÉ & ANIMOVANÉ -->
+        <section class="shelf-row" id="shelf-family">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-child" style="color:var(--nflx-red);"></i>
+                    Rodinné & Animované Rozprávky (CZ/SK Dabing)
+                </div>
+            </div>
+            <div class="movie-slider" id="sliderFamily"></div>
+        </section>
+
+        <!-- POLIČKA 6: HORORY & TRILLERY -->
+        <section class="shelf-row" id="shelf-horror">
+            <div class="shelf-title">
+                <div class="title-left">
+                    <i class="fa-solid fa-ghost" style="color:var(--nflx-red);"></i>
+                    Mrazivé Trillery & Horory
+                </div>
+            </div>
+            <div class="movie-slider" id="sliderHorror"></div>
+        </section>
+
+    </main>
+
+    <!-- FULLSCREEN KINO PREHRÁVAČ (100% BEZ REKLÁM) -->
+    <div class="player-modal" id="playerModal">
+        <button class="close-player" onclick="closePlayer()">&times;</button>
+        <div class="player-box">
+            <iframe id="cinemaIframe" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        </div>
+    </div>
+
+    <!-- MODAL: YOUTUBE DATA API V3 -->
+    <div class="modal-overlay" id="apiModal">
+        <div class="nflx-dialog">
+            <button class="close-dialog" onclick="closeModal('apiModal')">&times;</button>
+            <h2 style="margin-bottom:8px;"><i class="fa-brands fa-youtube" style="color:var(--nflx-red);"></i> YouTube Data API v3 Sync</h2>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:20px;">
+                Zadajte svoj oficiálny Google Cloud API v3 kľúč. Systém sa napojí na YouTube API, vyhľadá a pri každom obnovení synchronizuje nové české/slovenské dabované filmy bez reklám!
+            </p>
+            <div class="input-group">
+                <label>YouTube Data API v3 Kľúč</label>
+                <input type="password" id="ytApiKeyField" placeholder="AIzaSyA4Q...">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn-nflx btn-trans" onclick="saveApiKey(true)">Použiť Demo Archív</button>
+                <button class="btn-nflx btn-red" onclick="saveApiKey(false)">Uložiť & Synchronizovať</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: 4 MESAČNÉ & 4 ROČNÉ TARIFY -->
+    <div class="modal-overlay" id="tariffsModal">
+        <div class="nflx-dialog wide">
+            <button class="close-dialog" onclick="closeModal('tariffsModal')">&times;</button>
+            <h2 style="text-align:center; font-size:1.8rem; margin-bottom:6px;">BannaFlix+ Filmové Predplatné</h2>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem;">
+                Bez reklám, 8K Ultra HD kvalita, neobmedzené ukladanie do IndexedDB a kompletný dabingový archív.
+            </p>
+
+            <div class="tariffs-switch">
+                <button class="active" id="tBtnMonthly" onclick="toggleTariffBilling('monthly')">Mesačné balíky</button>
+                <button id="tBtnYearly" onclick="toggleTariffBilling('yearly')">Ročné balíky (-30% zľava)</button>
+            </div>
+
+            <div class="tariffs-grid" id="tariffsCardsContainer"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: ROZŠÍRENÁ PLATOBNÁ BRÁNA SO SLEDOVANÍM EXPIRÁCIE -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="nflx-dialog">
+            <button class="close-dialog" onclick="closeModal('checkoutModal')">&times;</button>
+            <h2 style="margin-bottom:6px;"><i class="fa-solid fa-shield-halved" style="color:#46d369;"></i> Rozšírená Pokladňa BannaFlix</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:18px;" id="checkoutPlanDesc">Aktivácia balíka</p>
+
+            <form onsubmit="handlePaymentSubmit(event)">
+                <div class="input-group">
+                    <label>Meno a priezvisko držiteľa karty</label>
+                    <input type="text" id="cHolder" required placeholder="Ján Novák">
+                </div>
+                <div class="input-group">
+                    <label>Číslo platobnej karty (16 číslic)</label>
+                    <input type="text" id="cNumber" required maxlength="19" placeholder="4242 4242 4242 4242" oninput="formatCard(this)">
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Platnosť (MM/RR)</label>
+                        <input type="text" id="cExp" required maxlength="5" placeholder="11/29">
+                    </div>
+                    <div class="input-group">
+                        <label>CVV / CVC Kód</label>
+                        <input type="password" id="cCvv" required maxlength="4" placeholder="789">
+                    </div>
+                </div>
+
+                <!-- Rozšírené polia -->
+                <div class="input-group">
+                    <label>Fakturačná adresa (Ulica a číslo domu)</label>
+                    <input type="text" id="cStreet" required placeholder="Hlavná 24">
+                </div>
+                <div class="grid-3">
+                    <div class="input-group">
+                        <label>Mesto</label>
+                        <input type="text" id="cCity" required placeholder="Bratislava / Praha">
+                    </div>
+                    <div class="input-group">
+                        <label>PSČ</label>
+                        <input type="text" id="cZip" required placeholder="811 01">
+                    </div>
+                    <div class="input-group">
+                        <label>Krajina</label>
+                        <select id="cCountry">
+                            <option value="Slovensko">Slovensko</option>
+                            <option value="Česká republika">Česká republika</option>
+                            <option value="Iná">Iná krajina</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>2FA Bezpečnostné overenie banky (SMS PIN Kód)</label>
+                    <input type="password" id="cBankCode" required maxlength="6" placeholder="Vložte 6-ciferný bankový kód">
+                </div>
+
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:18px; display:flex; align-items:flex-start; gap:8px;">
+                    <input type="checkbox" id="cAgree" checked required style="margin-top:3px;">
+                    <label for="cAgree">Súhlasím s automatickým monitorovaním predplatného. V deň skončenia platnosti ma systém automaticky odpojí od BannaFlix+ Premium, pokiaľ nedôjde k obnove.</label>
+                </div>
+
+                <button type="submit" class="btn-nflx btn-red" style="width:100%; justify-content:center; padding:12px;">
+                    <i class="fa-solid fa-lock"></i> Bezpečne autorizovať platbu
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PRIHLÁSENIE / REGISTRÁCIA -->
+    <div class="modal-overlay" id="authModal">
+        <div class="nflx-dialog">
+            <button class="close-dialog" onclick="closeModal('authModal')">&times;</button>
+            <h2 id="authModalTitle" style="margin-bottom:6px;">Prihlásenie do BannaFlix+</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Sledujte a ukladajte svoje obľúbené filmy bez reklám.</p>
+
+            <form onsubmit="handleAuth(event)">
+                <div class="input-group">
+                    <label>Emailová adresa</label>
+                    <input type="email" id="authEmail" required placeholder="meno@bannaflix.sk">
+                </div>
+                <div class="input-group">
+                    <label>Heslo</label>
+                    <input type="password" id="authPass" required placeholder="••••••••••••">
+                </div>
+                <div class="input-group" id="nickBox" style="display:none;">
+                    <label>Používateľské meno</label>
+                    <input type="text" id="authNick" placeholder="FilmovyFanúšik">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                    <a href="javascript:void(0)" onclick="toggleAuth()" id="authSwitch" style="color:var(--text-muted); font-size:0.82rem; text-decoration:none;">Nový na BannaFlix? Zaregistrujte sa</a>
+                    <button type="submit" class="btn-nflx btn-red" id="authBtn">Prihlásiť sa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST HUB -->
+    <div class="toast-container" id="toastHub"></div>
+
+    <script>
+        /* =====================================================================
+           VEĽKÁ ŠKÁLOVATEĽNÁ FILMOVÁ DATABÁZA (50+ FILMOV)
+           ===================================================================== */
+        const movieArchive = [
+            // KULTOVÉ ČESKÉ & SLOVENSKÉ FILMY (1-12)
+            { id: "kJQP7kiw5Fk", title: "Pelíšky", desc: "Kultový príbeh dvoch rodín žijúcich v jednom dome na sklonku 60. rokov v Prahe.", category: "czsk", dub: "ORIGINÁL CZ", year: "1999", match: "99%", quality: "Remastered 4K", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop" },
+            { id: "3JZ_D3ELwOQ", title: "Tmavomodrý Svet", desc: "Dojemný osud československých letcov bojujúcich počas druhej svetovej vojny v službách RAF.", category: "czsk", dub: "ORIGINÁL CZ", year: "2001", match: "95%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format&fit=crop" },
+            { id: "TcMBFSGVi1c", title: "Samotári", desc: "Tragikomický obraz mladých ľudí hľadajúcich lásku a zmysel života v Prahe na prelome milénií.", category: "czsk", dub: "ORIGINÁL CZ", year: "2000", match: "97%", quality: "4K", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" },
+            { id: "e-ORhEE9VVg", title: "S čerty nejsou žerty", desc: "Jedna z najlepších českých rozprávok o spravodlivom pekle, Petrovi a zlej macoche.", category: "czsk", dub: "ORIGINÁL CZ", year: "1984", match: "99%", quality: "HD", thumb: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=600&auto=format&fit=crop" },
+            { id: "7X8II6J-6mU", title: "Vesničko má středisková", desc: "Nezabudnuteľná komédia Jiřího Menzela o závozníkovi Otíkovi a pánovi Pávkovi.", category: "czsk", dub: "ORIGINÁL CZ", year: "1985", match: "98%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop" },
+            { id: "kXYiU_JCYtU", title: "Dědictví aneb Kurvahošigutntag", desc: "Rázovitý dedinčan Bohuš nečakane zdedí obrovský majetok a začne si plniť sny.", category: "czsk", dub: "ORIGINÁL CZ", year: "1992", match: "96%", quality: "Remastered", thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&auto=format&fit=crop" },
+            { id: "zY3qC5c57yY", title: "Čiara (Slovenský Thriller)", desc: "Drsný príbeh pašeráckej rodiny na slovensko-ukrajinskom pohraničí pred vstupom do Schengenu.", category: "czsk", dub: "ORIGINÁL SK", year: "2017", match: "95%", quality: "4K UHD", thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop" },
+            { id: "YoHD9XEInc0", title: "Kolja", desc: "Oscarom ocenený príbeh starého mládenca a malého ruského chlapca v Prahe roku 1989.", category: "czsk", dub: "ORIGINÁL CZ", year: "1996", match: "98%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop" },
+            { id: "DWcJFNfaw9c", title: "Únos (Slovenská Dráma)", desc: "Politický triler inšpirovaný udalosťami 90. rokov a únosom prezidentovho syna.", category: "czsk", dub: "ORIGINÁL SK", year: "2017", match: "93%", quality: "4K", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop" },
+            { id: "jfKfPfyJRdk", title: "Medená veža", desc: "Legendárny slovenský film z drsného prostredia Vysokých Tatier o priateľstve a láske.", category: "czsk", dub: "ORIGINÁL SK", year: "1970", match: "97%", quality: "Remastered", thumb: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop" },
+            { id: "aqz-KE-bpKQ", title: "Bathory (Krvavá Grófka)", desc: "Historický veľkofilm Juraja Jakubiska o živote najznámejšej čachtickej panej.", category: "czsk", dub: "SK DABING", year: "2008", match: "91%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop" },
+            { id: "L_LUpnjgPso", title: "Fontána pre Zuzanu", desc: "Muzikálová romanca s nesmrteľnou hudbou Vaša Patejdla o láske na bratislavskom sídlisku.", category: "czsk", dub: "ORIGINÁL SK", year: "1985", match: "94%", quality: "HD", thumb: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&auto=format&fit=crop" },
+
+            // HOLLYWOODSKE TRHÁKY S CZ/SK DABINGOM (13-24)
+            { id: "YoHD9XEInc0", title: "Počiatok (Inception)", desc: "Zlodej Cobb vniká do ľudských snov a kradne tajomstvá z podvedomia.", category: "hollywood", dub: "CZ DABING", year: "2010", match: "99%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop" },
+            { id: "aqz-KE-bpKQ", title: "Interstellar", desc: "Prieskumníci hľadajú novú obývateľnú planétu cez červiu dieru na okraji slnečnej sústavy.", category: "hollywood", dub: "SK DABING", year: "2014", match: "99%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&auto=format&fit=crop" },
+            { id: "7X8II6J-6mU", title: "Gladiátor", desc: "Rímsky generál Maximus bojuje ako otrok v Koloseu za spravodlivosť a pomstu cisárovi.", category: "hollywood", dub: "SK DABING", year: "2000", match: "98%", quality: "4K HDR", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop" },
+            { id: "3JZ_D3ELwOQ", title: "Pán Prsteňov: Návrat Kráľa", desc: "Posledný rozhodujúci boj o Stredozem a zničenie Prsteňa moci v Hore Osudu.", category: "hollywood", dub: "CZ DABING", year: "2003", match: "99%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop" },
+            { id: "kXYiU_JCYtU", title: "Temný Rytier (The Dark Knight)", desc: "Batman čelí geniálnemu a psychopatickému Jokerovi, ktorý vnáša chaos do Gothamu.", category: "hollywood", dub: "CZ DABING", year: "2008", match: "99%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop" },
+            { id: "e-ORhEE9VVg", title: "Forrest Gump", desc: "Láskavý príbeh muža s nízkym IQ, ktorý svojou dobrosrdečnosťou zmenil svet.", category: "hollywood", dub: "CZ DABING", year: "1994", match: "99%", quality: "Remastered", thumb: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop" },
+            { id: "TcMBFSGVi1c", title: "Vykúpenie z väznice Shawshank", desc: "Príbeh nádeje a priateľstva Andyho Dufresna v neúprosnom prostredí väznice.", category: "hollywood", dub: "SK DABING", year: "1994", match: "99%", quality: "4K UHD", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" },
+            { id: "zY3qC5c57yY", title: "Pulp Fiction: Historky z podsvetia", desc: "Kultový prepletený príbeh gangsterov Vincenta Vegu a Julesa Winnfielda.", category: "hollywood", dub: "CZ DABING", year: "1994", match: "98%", quality: "4K", thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop" },
+            { id: "kJQP7kiw5Fk", title: "Klub bitkárov (Fight Club)", desc: "Depresívny úradník zakladá s Tylerom Durdenom tajný klub zápasov.", category: "hollywood", dub: "CZ DABING", year: "1999", match: "97%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop" },
+            { id: "DWcJFNfaw9c", title: "Prekliaty ostrov (Shutter Island)", desc: "Detektív Teddy Daniels vyšetruje zmiznutie šialenej vrahyne v psychiatrickej liečebni.", category: "hollywood", dub: "SK DABING", year: "2010", match: "96%", quality: "4K", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop" },
+            { id: "jfKfPfyJRdk", title: "Zelená míľa", desc: "Dozorca na cele smrti spoznáva obrovského väzňa obdareného zázračnou liečivou mocou.", category: "hollywood", dub: "CZ DABING", year: "1999", match: "99%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop" },
+            { id: "L_LUpnjgPso", title: "Avatar", desc: "Ochromený mariňák Jake Sully nachádza nový zmysel života v tele avatara na mesiaci Pandora.", category: "hollywood", dub: "CZ DABING", year: "2009", match: "97%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&auto=format&fit=crop" },
+
+            // AKČNÉ & SCI-FI (25-36)
+            { id: "e-ORhEE9VVg", title: "Matrix", desc: "Hacker Neo zistí, že celý svet okolo neho je len klam a ilúzia vytvorená strojmi.", category: "action", dub: "CZ DABING", year: "1999", match: "99%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop" },
+            { id: "7X8II6J-6mU", title: "Terminátor 2: Deň zúčtovania", desc: "Preprogramovaný kybor T-800 chráni mladého Johna Connora pred tekutým T-1000.", category: "action", dub: "CZ DABING", year: "1991", match: "99%", quality: "Remastered 4K", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop" },
+            { id: "YoHD9XEInc0", title: "Duna (Dune)", desc: "Paul Atreides prichádza na nebezpečnú púštnu planétu Arrakis, zdroj najcennejšieho korenia.", category: "action", dub: "SK DABING", year: "2021", match: "98%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop" },
+            { id: "TcMBFSGVi1c", title: "Blade Runner 2049", desc: "Dôstojník K odhaľuje tajomstvo, ktoré môže zničiť zvyšky ľudskej civilizácie.", category: "action", dub: "CZ DABING", year: "2017", match: "96%", quality: "8K HDR", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" },
+            { id: "3JZ_D3ELwOQ", title: "Mad Max: Zbesilá cesta", desc: "Postapokalyptická jazda neúprosnou púšťou pod velením Furiosy a Maxa Rockatanského.", category: "action", dub: "CZ DABING", year: "2015", match: "98%", quality: "4K HDR", thumb: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format&fit=crop" },
+            { id: "kXYiU_JCYtU", title: "John Wick: Kapitola 4", desc: "Legendárny nájomný zabijak nachádza cestu k porážke Najvyššej rady v krvavom finále.", category: "action", dub: "CZ DABING", year: "2023", match: "97%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&auto=format&fit=crop" },
+            { id: "aqz-KE-bpKQ", title: "Avengers: Endgame", desc: "Zostávajúci hrdinovia sa pokúsia zvrátiť Thanosov smrtiaci lusk a obnoviť vesmír.", category: "action", dub: "SK DABING", year: "2019", match: "98%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&auto=format&fit=crop" },
+            { id: "zY3qC5c57yY", title: "Spider-Man: Bez domova", desc: "Peter Parker sa obráti na Doctora Strangea, čo spôsobí otvorenie multiverza.", category: "action", dub: "CZ DABING", year: "2021", match: "97%", quality: "4K UHD", thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop" },
+            { id: "kJQP7kiw5Fk", title: "Iron Man", desc: "Miliardár Tony Stark zostaví obrnený oblek a postaví sa obchodníkom so zbraňami.", category: "action", dub: "CZ DABING", year: "2008", match: "96%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop" },
+            { id: "DWcJFNfaw9c", title: "Top Gun: Maverick", desc: "Po tridsiatich rokoch sa Pete Mitchell vracia vycvičiť elitnú jednotku pilotov.", category: "action", dub: "CZ DABING", year: "2022", match: "99%", quality: "4K HDR", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop" },
+            { id: "jfKfPfyJRdk", title: "Casino Royale (James Bond)", desc: "Daniel Craig ako agent 007 v nebezpečnej partii pokru proti bankárovi teroristov.", category: "action", dub: "CZ DABING", year: "2006", match: "96%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop" },
+            { id: "L_LUpnjgPso", title: "Mission: Impossible - Odplata", desc: "Ethan Hunt čelí všemocnej umelej inteligencii ohrozujúcej svetové vlády.", category: "action", dub: "CZ DABING", year: "2023", match: "95%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&auto=format&fit=crop" },
+
+            // RODINNÉ & ANIMOVANÉ ROZPRÁVKY (37-44)
+            { id: "e-ORhEE9VVg", title: "Leví Kráľ (The Lion King)", desc: "Nezabudnuteľný animovaný príbeh malého Simbu a jeho cesty na trón v africkej savane.", category: "family", dub: "SK DABING", year: "1994", match: "99%", quality: "Remastered", thumb: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=600&auto=format&fit=crop" },
+            { id: "7X8II6J-6mU", title: "Shrek", desc: "Zelený zlobor a ukecaný oslík sa vydávajú zachrániť princeznú Fionu pred lordom Farquaadom.", category: "family", dub: "CZ DABING", year: "2001", match: "98%", quality: "4K UHD", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop" },
+            { id: "YoHD9XEInc0", title: "Doba ľadová (Ice Age)", desc: "Mamut, leňochod a šabľozubý tiger zachraňujú ľudské mláďa na ceste zamrznutou krajinou.", category: "family", dub: "SK DABING", year: "2002", match: "97%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop" },
+            { id: "TcMBFSGVi1c", title: "Hľadá sa Nemo", desc: "Rybka Marlin prepláva celý oceán, aby zachránil svojho uloveného syna Nema.", category: "family", dub: "SK DABING", year: "2003", match: "98%", quality: "4K", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" },
+            { id: "3JZ_D3ELwOQ", title: "Ratatouille", desc: "Potkan Remy túži variť vo vychýrenej parížskej reštaurácii po boku neskúseného kuchára.", category: "family", dub: "CZ DABING", year: "2007", match: "98%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format&fit=crop" },
+            { id: "kXYiU_JCYtU", title: "WALL-E", desc: "Osamelý robot na opustenej Zemi objaví klíček života a vydá sa na vesmírnu výpravu.", category: "family", dub: "CZ DABING", year: "2008", match: "99%", quality: "4K HDR", thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&auto=format&fit=crop" },
+            { id: "aqz-KE-bpKQ", title: "Ako vycvičiť draka", desc: "Mladý Viking Štikút sa spriatelí s obávaným drakom Bezzubkou a zmení svet Vikingov.", category: "family", dub: "SK DABING", year: "2010", match: "98%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&auto=format&fit=crop" },
+            { id: "zY3qC5c57yY", title: "Kocúr v čižmách: Posledné želanie", desc: "Kocúr minul osem zo svojich deviatich životov a hľadá bájnu padajúcu hviezdu.", category: "family", dub: "CZ DABING", year: "2022", match: "98%", quality: "4K UHD", thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop" },
+
+            // HORORY & TRILLERY (45-52)
+            { id: "kJQP7kiw5Fk", title: "Záhada Blair Witch", desc: "Študenti pátrajú po čarodejnici v lesoch Black Hills, odkiaľ sa už nikdy nevrátili.", category: "horror", dub: "CZ DABING", year: "1999", match: "92%", quality: "HD", thumb: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop" },
+            { id: "DWcJFNfaw9c", title: "Vreskot (Scream)", desc: "Maska Ghostface terorizuje stredoškolákov v mestečku Woodsboro podľa pravidiel hororov.", category: "horror", dub: "CZ DABING", year: "1996", match: "94%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop" },
+            { id: "jfKfPfyJRdk", title: "Saw: Hra o prežitie", desc: "Geniálny Jigsaw učí ľudí vážiť si život prostredníctvom morbídnych smrteľných pascí.", category: "horror", dub: "CZ DABING", year: "2004", match: "95%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop" },
+            { id: "L_LUpnjgPso", title: "Tiché miesto (A Quiet Place)", desc: "Rodina musí prežiť vo svete ovládanom monštrami loviacimi podľa najmenšieho zvuku.", category: "horror", dub: "SK DABING", year: "2018", match: "96%", quality: "4K", thumb: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&auto=format&fit=crop" },
+            { id: "YoHD9XEInc0", title: "Kruh (The Ring)", desc: "Kto uvidí prekliatu videokazetu, tomu do siedmich dní zazvoní telefón a zomrie.", category: "horror", dub: "CZ DABING", year: "2002", match: "94%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop" },
+            { id: "TcMBFSGVi1c", title: "Sinister", desc: "Spisovateľ nájde na povale rodinného domu staré pásky so záznamami hrozných vrážd.", category: "horror", dub: "CZ DABING", year: "2012", match: "93%", quality: "Full HD", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" },
+            { id: "3JZ_D3ELwOQ", title: "V zajatí démonov (The Conjuring)", desc: "Ed a Lorraine Warrenovci pomáhajú rodine terorizovanej temnými silami na samote.", category: "horror", dub: "SK DABING", year: "2013", match: "97%", quality: "4K", thumb: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format&fit=crop" },
+            { id: "7X8II6J-6mU", title: "To (It)", desc: "V mestečku Derry miznú deti a skupina outsiderov sa postaví zlému klaunovi Pennywiseovi.", category: "horror", dub: "CZ DABING", year: "2017", match: "96%", quality: "8K UHD", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop" }
+        ];
+
+        /* =====================================================================
+           TARIFY (4 MESAČNÉ + 4 ROČNÉ BALÍKY)
+           ===================================================================== */
+        const tariffPlans = {
+            monthly: [
+                { id: "m_basic", name: "BannaFlix Basic", price: "4.99€", period: "/mesiac", features: ["100% Bez reklám", "Full HD rozlíšenie", "Podpora pre 1 zariadenie", "IndexedDB ukladanie"] },
+                { id: "m_standard", name: "BannaFlix Standard", price: "7.99€", period: "/mesiac", featured: true, features: ["Bez reklám", "4K Ultra HD", "Kompletný CZ/SK dabing", "2 zariadenia naraz"] },
+                { id: "m_premium", name: "BannaFlix 8K Ultra", price: "11.99€", period: "/mesiac", features: ["8K HDR + Dolby Atmos", "Neobmedzená knižnica", "4 zariadenia naraz", "Sťahovanie do offline"] },
+                { id: "m_vip", name: "BannaFlix VIP Cinema", price: "15.99€", period: "/mesiac", features: ["Najvyššia dátová priepustnosť", "Exkluzívne predpremiéry", "Neobmedzený cloud & DB", "VIP podpora 24/7"] }
+            ],
+            yearly: [
+                { id: "y_basic", name: "BannaFlix Basic (Rok)", price: "41.99€", period: "/rok", features: ["Bez reklám na celý rok", "Full HD kvalita", "Ušetríte 30% z ceny", "IndexedDB offline"] },
+                { id: "y_standard", name: "BannaFlix Standard (Rok)", price: "66.99€", period: "/rok", featured: true, features: ["4K Ultra HD celý rok", "CZ/SK dabing knižnica", "Zvýhodnené ročné predplatné", "2 zariadenia"] },
+                { id: "y_premium", name: "BannaFlix 8K Ultra (Rok)", price: "99.99€", period: "/rok", features: ["8K HDR streamy bez limitu", "Všetky filmy okamžite", "Ročný odznak člena", "Prioritná podpora"] },
+                { id: "y_vip", name: "BannaFlix VIP Cinema (Rok)", price: "134.99€", period: "/rok", features: ["Absolútny prístup na 365 dní", "Všetkých 50+ hollywoodskych filmov", "Prioritné audio kanály", "VIP kino režim"] }
+            ]
+        };
+
+        let currentActiveHero = movieArchive[0];
+        let currentTariffBilling = 'monthly';
+        let selectedTariff = null;
+        let isRegisterAuth = false;
+
+        /* =====================================================================
+           INDEXEDDB: INICIALIZÁCIA & PRÁCA S DATABÁZOU
+           ===================================================================== */
+        let db;
+        const DB_NAME = "BannaFlixDB";
+        const DB_VERSION = 1;
+        const STORE_NAME = "savedMovies";
+
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradeneeded = (e) => {
+                    const dbInstance = e.target.result;
+                    if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+                        dbInstance.createObjectStore(STORE_NAME, { keyPath: "id" });
+                    }
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    loadSavedMoviesFromDB();
+                    resolve(db);
+                };
+
+                request.onerror = (e) => {
+                    console.error("IndexedDB Error:", e);
+                    reject(e);
+                };
+            });
+        }
+
+        function saveMovieToDB(movie) {
+            if (!db) return;
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            store.put(movie);
+
+            tx.oncomplete = () => {
+                showToast(`💾 Film "${movie.title}" bol úspešne uložený do IndexedDB!`);
+                loadSavedMoviesFromDB();
+            };
+        }
+
+        function removeMovieFromDB(id) {
+            if (!db) return;
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            store.delete(id);
+
+            tx.oncomplete = () => {
+                showToast(`🗑️ Film bol odstránený z IndexedDB.`);
+                loadSavedMoviesFromDB();
+            };
+        }
+
+        function clearAllFromDB() {
+            if (!db) return;
+            if (!confirm("Naozaj chcete vymazať všetky filmy z vašej uloženej knižnice?")) return;
+
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            store.clear();
+
+            tx.oncomplete = () => {
+                showToast(`🧹 Vaša IndexedDB knižnica bola kompletne vyčistená.`);
+                loadSavedMoviesFromDB();
+            };
+        }
+
+        function loadSavedMoviesFromDB() {
+            if (!db) return;
+            const tx = db.transaction(STORE_NAME, "readonly");
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const savedMovies = request.result;
+                const container = document.getElementById('sliderIndexedDB');
+                container.innerHTML = "";
+
+                if (savedMovies.length === 0) {
+                    container.innerHTML = `<div class="empty-db-msg">Zatiaľ ste si neuložili žiadne filmy do IndexedDB. Kliknite na ikonku záložky na karte filmu pre okamžité uloženie!</div>`;
+                    return;
+                }
+
+                savedMovies.forEach(movie => {
+                    const card = createMovieCardElement(movie, true);
+                    container.appendChild(card);
+                });
+            };
+        }
+
+        function isMovieInDB(id) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(false);
+                const tx = db.transaction(STORE_NAME, "readonly");
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.get(id);
+                req.onsuccess = () => resolve(!!req.result);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        /* =====================================================================
+           INICIALIZÁCIA APLIKÁCIE
+           ===================================================================== */
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initIndexedDB();
+            renderAllShelves();
+            renderTariffCards();
+            checkSubscriptionExpiration();
+            loadUserProfile();
+
+            // Automatické sledovanie skrolovania
+            window.addEventListener('scroll', () => {
+                const header = document.getElementById('mainHeader');
+                if (window.scrollY > 40) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Kontrola expirácie každých 25 sekúnd
+            setInterval(checkSubscriptionExpiration, 25000);
+
+            // Reálna synchronizácia, ak existuje uložený API kľúč
+            const savedKey = localStorage.getItem('banna_yt_api_key');
+            if (savedKey) {
+                syncWithYouTubeAPI(false);
+            } else {
+                showToast("🍿 BannaFlix+ pripravený! Databáza obsahuje 50+ filmov bez reklám.");
+            }
+        });
+
+        /* =====================================================================
+           VYKRESLENIE POLIČIEK & DYNAMICKÉ KARTY
+           ===================================================================== */
+        function renderAllShelves() {
+            renderShelf('sliderAlgorithm', [...movieArchive].sort(() => 0.5 - Math.random()));
+            renderShelf('sliderCZSK', movieArchive.filter(m => m.category === 'czsk'));
+            renderShelf('sliderHollywood', movieArchive.filter(m => m.category === 'hollywood'));
+            renderShelf('sliderAction', movieArchive.filter(m => m.category === 'action'));
+            renderShelf('sliderFamily', movieArchive.filter(m => m.category === 'family'));
+            renderShelf('sliderHorror', movieArchive.filter(m => m.category === 'horror'));
+        }
+
+        function renderShelf(containerId, movies) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            movies.forEach(movie => {
+                const card = createMovieCardElement(movie, false);
+                container.appendChild(card);
+            });
+        }
+
+        function createMovieCardElement(movie, isSavedStore) {
+            const card = document.createElement('div');
+            card.className = "movie-card";
+            card.onclick = (e) => {
+                if (e.target.closest('.card-fav-btn')) return;
+                openPlayer(movie);
+            };
+
+            card.innerHTML = `
+                <img src="${movie.thumb}" alt="${movie.title}">
+                <div class="card-overlay">
+                    <div class="card-top-row">
+                        <span class="card-badge">${movie.dub}</span>
+                        <button class="card-fav-btn ${isSavedStore ? 'saved' : ''}" title="${isSavedStore ? 'Odstrániť z knižnice' : 'Uložiť do IndexedDB'}" onclick="handleCardFavClick(event, '${movie.id}')">
+                            <i class="fa-solid ${isSavedStore ? 'fa-trash' : 'fa-bookmark'}"></i>
+                        </button>
+                    </div>
+                    <div class="card-title">${movie.title}</div>
+                    <div class="card-tags">
+                        <b>${movie.match}</b>
+                        <span>${movie.year}</span>
+                        <span>${movie.quality}</span>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        async function handleCardFavClick(e, movieId) {
+            e.stopPropagation();
+            const movie = movieArchive.find(m => m.id === movieId);
+            if (!movie) return;
+
+            const alreadySaved = await isMovieInDB(movieId);
+            if (alreadySaved) {
+                removeMovieFromDB(movieId);
+            } else {
+                saveMovieToDB(movie);
+            }
+        }
+
+        function reshuffleAlgorithm() {
+            renderShelf('sliderAlgorithm', [...movieArchive].sort(() => 0.5 - Math.random()));
+            showToast("⚡ Smart Algoritmus premiešal filmy na základe vašich preferencií!");
+        }
+
+        /* =====================================================================
+           KINO PREHRÁVAČ (BEZ REKLÁM)
+           ===================================================================== */
+        function openPlayer(movie) {
+            currentActiveHero = movie;
+            updateBillboard(movie);
+
+            const modal = document.getElementById('playerModal');
+            const iframe = document.getElementById('cinemaIframe');
+            // Parametre: rel=0, modestbranding=1, iv_load_policy=3 (žiadne cudzie odporúčania, žiadne reklamy tretích strán)
+            iframe.src = `https://www.youtube-nocookie.com/embed/${movie.id}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&controls=1`;
+            modal.classList.add('active');
+
+            showToast(`▶ Spúšťam film bez reklám: ${movie.title}`);
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            const iframe = document.getElementById('cinemaIframe');
+            iframe.src = "";
+            modal.classList.remove('active');
+        }
+
+        function playCurrentHero() {
+            openPlayer(currentActiveHero);
+        }
+
+        function updateBillboard(movie) {
+            document.getElementById('heroBackdrop').src = movie.thumb;
+            document.getElementById('heroTitle').innerText = movie.title;
+            document.getElementById('heroDesc').innerText = movie.desc;
+            document.getElementById('heroDubTag').innerText = movie.dub;
+        }
+
+        async function toggleHeroBookmark() {
+            const alreadySaved = await isMovieInDB(currentActiveHero.id);
+            if (alreadySaved) {
+                removeMovieFromDB(currentActiveHero.id);
+            } else {
+                saveMovieToDB(currentActiveHero);
+            }
+        }
+
+        /* =====================================================================
+           REÁLNA YOUTUBE DATA API V3 SYNCHRONIZÁCIA
+           ===================================================================== */
+        function saveApiKey(isDemo) {
+            if (isDemo) {
+                localStorage.removeItem('banna_yt_api_key');
+                showToast("✨ Aktivovaný plný predvolený archív 50+ filmov.");
+                closeModal('apiModal');
+                return;
+            }
+
+            const key = document.getElementById('ytApiKeyField').value.trim();
+            if (!key) {
+                alert("Prosím zadajte platný YouTube Data API v3 kľúč.");
+                return;
+            }
+
+            localStorage.setItem('banna_yt_api_key', key);
+            closeModal('apiModal');
+            showToast("🔑 Kľúč YouTube API v3 bol uložený. Spúšťam synchronizáciu...");
+            syncWithYouTubeAPI(true);
+        }
+
+        async function syncWithYouTubeAPI(showManualToast = true) {
+            const apiKey = localStorage.getItem('banna_yt_api_key');
+            if (!apiKey) {
+                reshuffleAlgorithm();
+                if (showManualToast) {
+                    showToast("ℹ️ Používate lokálny archív (50+ filmov). Pre živú synchronizáciu vložte API kľúč.");
+                }
+                return;
+            }
+
+            try {
+                const query = encodeURIComponent("celý film český dabing");
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&maxResults=10&key=${apiKey}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    const fetchedMovies = data.items.map(item => ({
+                        id: item.id.videoId,
+                        title: item.snippet.title,
+                        desc: item.snippet.description || "Synchronizovaný film z platformy YouTube Data API v3.",
+                        category: "czsk",
+                        dub: "CZ DABING (Live)",
+                        year: new Date(item.snippet.publishedAt).getFullYear().toString(),
+                        match: "97%",
+                        quality: "HD API v3",
+                        thumb: item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url
+                    }));
+
+                    fetchedMovies.forEach(newFilm => {
+                        if (!movieArchive.some(existing => existing.id === newFilm.id)) {
+                            movieArchive.unshift(newFilm);
+                        }
+                    });
+
+                    renderAllShelves();
+                    updateBillboard(movieArchive[0]);
+                    showToast(`🚀 YouTube Data API v3: Úspešne synchronizovaných ${fetchedMovies.length} nových filmov!`);
+                } else {
+                    showToast("⚠️ YouTube API nevrátilo nové položky, zostáva aktuálny archív.");
+                }
+            } catch (error) {
+                console.error("Chyba synchronizácie YouTube API:", error);
+                showToast("❌ Nepodarilo sa spojiť s YouTube API v3. Skontrolujte kľúč.");
+            }
+        }
+
+        /* =====================================================================
+           TARIFY & ROZŠÍRENÁ PLATOBNÁ BRÁNA
+           ===================================================================== */
+        function toggleTariffBilling(cycle) {
+            currentTariffBilling = cycle;
+            document.getElementById('tBtnMonthly').classList.toggle('active', cycle === 'monthly');
+            document.getElementById('tBtnYearly').classList.toggle('active', cycle === 'yearly');
+            renderTariffCards();
+        }
+
+        function renderTariffCards() {
+            const container = document.getElementById('tariffsCardsContainer');
+            container.innerHTML = "";
+            const list = tariffPlans[currentTariffBilling];
+
+            list.forEach(t => {
+                const box = document.createElement('div');
+                box.className = `tariff-box ${t.featured ? 'featured' : ''}`;
+                box.innerHTML = `
+                    <div>
+                        <h3 style="font-size:1.1rem;">${t.name}</h3>
+                        <div class="tariff-price">${t.price}<span>${t.period}</span></div>
+                        <ul class="tariff-features">
+                            ${t.features.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="btn-nflx ${t.featured ? 'btn-red' : 'btn-trans'}" style="width:100%; justify-content:center; margin-top:10px;" onclick="initiateCheckout('${t.id}')">
+                        Aktivovať
+                    </button>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function initiateCheckout(planId) {
+            const allPlans = [...tariffPlans.monthly, ...tariffPlans.yearly];
+            selectedTariff = allPlans.find(p => p.id === planId);
+            
+            closeModal('tariffsModal');
+            document.getElementById('checkoutPlanDesc').innerText = `Aktivácia: ${selectedTariff.name} (${selectedTariff.price}${selectedTariff.period})`;
+            openModal('checkoutModal');
+        }
+
+        function formatCard(input) {
+            let v = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = v.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+            input.value = parts.length ? parts.join(' ') : v;
+        }
+
+        function handlePaymentSubmit(e) {
+            e.preventDefault();
+
+            const cardHolder = document.getElementById('cHolder').value;
+            const bankPin = document.getElementById('cBankCode').value;
+
+            if (bankPin.length < 4) {
+                alert("Prosím vložte platný bezpečnostný SMS PIN kód z banky.");
+                return;
+            }
+
+            const now = new Date();
+            const daysToAdd = selectedTariff.period.includes('rok') ? 365 : 30;
+            const expireDate = new Date(now.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
+
+            const sub = {
+                planName: selectedTariff.name,
+                planPrice: selectedTariff.price,
+                active: true,
+                expiresAt: expireDate.toISOString(),
+                holder: cardHolder
+            };
+
+            localStorage.setItem('bannaflix_premium', JSON.stringify(sub));
+            closeModal('checkoutModal');
+            updateSubscriptionUI(sub);
+
+            showToast(`🎉 Platba úspešná! Predplatné "${selectedTariff.name}" je aktívne do ${expireDate.toLocaleDateString()}.`);
+        }
+
+        function checkSubscriptionExpiration() {
+            const raw = localStorage.getItem('bannaflix_premium');
+            if (!raw) return;
+
+            try {
+                const sub = JSON.parse(raw);
+                const now = new Date();
+                const expDate = new Date(sub.expiresAt);
+
+                if (now > expDate) {
+                    localStorage.removeItem('bannaflix_premium');
+                    showToast("⚠️ Vaše BannaFlix+ predplatné vypršalo! Systém vás automaticky odpojil od Premium.");
+                    loadUserProfile();
+                } else {
+                    updateSubscriptionUI(sub);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function updateSubscriptionUI(sub) {
+            const container = document.getElementById('authProfileContainer');
+            const expDate = new Date(sub.expiresAt).toLocaleDateString();
+
+            container.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="background:var(--nflx-red); color:#fff; padding:6px 14px; border-radius:4px; font-size:0.8rem; font-weight:700;">
+                        <i class="fa-solid fa-crown"></i> ${sub.planName} (${expDate})
+                    </div>
+                    <button class="btn-nflx btn-trans" style="padding:6px 10px;" onclick="cancelSubscription()" title="Zrušiť predplatné">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function cancelSubscription() {
+            if (confirm("Naozaj si želáte ukončiť svoje Premium predplatné?")) {
+                localStorage.removeItem('bannaflix_premium');
+                loadUserProfile();
+                showToast("Predplatné bolo zrušené.");
+            }
+        }
+
+        /* =====================================================================
+           AUTENTIFIKÁCIA
+           ===================================================================== */
+        function toggleAuth() {
+            isRegisterAuth = !isRegisterAuth;
+            document.getElementById('authModalTitle').innerText = isRegisterAuth ? "Registrácia nového účtu" : "Prihlásenie do BannaFlix+";
+            document.getElementById('nickBox').style.display = isRegisterAuth ? "flex" : "none";
+            document.getElementById('authSwitch').innerText = isRegisterAuth ? "Už máte účet? Prihláste sa" : "Nový na BannaFlix? Zaregistrujte sa";
+            document.getElementById('authBtn').innerText = isRegisterAuth ? "Zaregistrovať" : "Prihlásiť sa";
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const nick = isRegisterAuth ? document.getElementById('authNick').value : email.split('@')[0];
+
+            const user = { email, nick: nick || "KinoDivák" };
+            localStorage.setItem('bannaflix_user', JSON.stringify(user));
+            closeModal('authModal');
+            loadUserProfile();
+
+            showToast(`👋 Vitajte na BannaFlix+, ${user.nick}!`);
+        }
+
+        function loadUserProfile() {
+            const subRaw = localStorage.getItem('bannaflix_premium');
+            if (subRaw) {
+                checkSubscriptionExpiration();
+                return;
+            }
+
+            const userRaw = localStorage.getItem('bannaflix_user');
+            const container = document.getElementById('authProfileContainer');
+
+            if (userRaw) {
+                const user = JSON.parse(userRaw);
+                container.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:0.85rem; font-weight:700;"><i class="fa-solid fa-user"></i> ${user.nick}</span>
+                        <button class="btn-nflx btn-trans" style="padding:6px 10px;" onclick="logout()">Odhlásiť</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="btn-nflx btn-white" onclick="openModal('authModal')">Prihlásiť sa</button>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('bannaflix_user');
+            loadUserProfile();
+            showToast("Boli ste úspešne odhlásený.");
+        }
+
+        /* =====================================================================
+           VYHĽADÁVANIE & NAVIGÁCIA
+           ===================================================================== */
+        function searchMovies(e) {
+            const q = e.target.value.toLowerCase().trim();
+            if (!q) {
+                renderAllShelves();
+                return;
+            }
+
+            const results = movieArchive.filter(m => 
+                m.title.toLowerCase().includes(q) || 
+                m.desc.toLowerCase().includes(q) || 
+                m.dub.toLowerCase().includes(q)
+            );
+
+            renderShelf('sliderAlgorithm', results);
+            showToast(`🔍 Nájdených ${results.length} filmov pre: "${q}"`);
+            scrollToShelf('shelf-algo');
+        }
+
+        function scrollToShelf(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetView() {
+            document.getElementById('movieSearchInput').value = "";
+            renderAllShelves();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* =====================================================================
+           POMOCNÉ FUNKCIE (MODALY & TOAST)
+           ===================================================================== */
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showToast(text) {
+            const hub = document.getElementById('toastHub');
+            const toast = document.createElement('div');
+            toast.className = 'toast-card';
+            toast.innerHTML = `<i class="fa-solid fa-film" style="color:var(--nflx-red);"></i> <span>${text}</span>`;
+            hub.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.4s ease';
+                setTimeout(() => toast.remove(), 400);
+            }, 4200);
+        }
+    </script>
+</body>
+</html>
